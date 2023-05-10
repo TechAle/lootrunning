@@ -1,12 +1,10 @@
 # Python program to explain cv2.line() method
 
 # importing cv2
-import cv2
-import time
 from imageManager import imageManager
-import numpy
 
 path = 'img.jpg'
+
 
 def main(pathInput):
     cvManager = imageManager(path=pathInput)
@@ -14,7 +12,9 @@ def main(pathInput):
     cvManager.setupDimensions()
     cvManager.setupSpawn()
     cvManager.createGraph()
+    #cvManager.createRestrictions()
     cvManager.calculatePath()
+
 
 if __name__ == "__main__":
     main(path)
