@@ -13,8 +13,13 @@ I have to use also 1)
 
 From this i create a graph, and from this graph i try to find the fastest path to reach every point.
 
+## Greedy algo
 For now i coded just 1 algorithm for this: a modified version of the greedy algorithm.<br>
 You can read how this is modified in chestManager.py function calculateGreedyBruteforce<br>
 A little resume is that it's a greedy algorithm that, at the same time try to find every possible combinations.<br>
 With this said, every possible combinations are n! - greedy factor that i dont know.<br>
 And since there are 169 nodes in total, it's a little under 169!... Yes i'm thinking about changing it with something else.
+
+## Ant algo
+I have not coded this, [source](https://github.com/Akavall/AntColonyOptimization/blob/master/ant_colony.py)<br>
+This is what it's gonna be used, really well coded and well optimized.

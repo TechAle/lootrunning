@@ -196,7 +196,8 @@ class imageManager:
 
     # This start the calculation of the best path
     def calculatePath(self):
-        self.drawnImage = self.chestManager.calculateGreedyBruteforce(self.drawnImage.copy())
+        #self.drawnImage = self.chestManager.calculateGreedyBruteforce(self.drawnImage.copy())
+        self.drawnImage = self.chestManager.calculateAntAlgorithm(self.drawnImage.copy())
         cv2.imshow("Lootrunning", self.drawnImage)
         cv2.waitKey(0)
 

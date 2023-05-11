@@ -2,10 +2,13 @@ import sys
 
 import cv2
 
+from ant_colony import AntColony
 from chestClass import chest
 from sortedcontainers import SortedDict
 
 from graphs import connection
+
+import numpy as np
 
 
 class chestManager:
@@ -108,6 +111,9 @@ class chestManager:
                 if wayp is toCheck:
                     continue
                 cost = abs(wayp.avgX - toCheck.avgX) + abs(wayp.avgY - toCheck.avgY)
+                # Having a costs of 0 mess up with the ant algo
+                if tempCosts == 0:
+                    tempCosts = 1
                 # Lazy fix, but it works
                 while tempCosts.__contains__(cost):
                     cost+=1
@@ -344,6 +350,7 @@ class chestManager:
         cv2.imshow("Lootrunning", display)
         cv2.waitKey(1)
 
+
     '''
         Given x, y, it returns the chest that is near that coordinate
         @:return None/chest
@@ -353,3 +360,27 @@ class chestManager:
             if ches.avgX - 8 < x < ches.avgX + 8 and ches.avgY - 8 < y < ches.avgY + 8:
                 return ches
         return None
+
+    def calculateAntAlgorithm(self, draw):
+        distances = np.empty((len(self.chests), len(self.chests)))
+        for idxAppend, toAppend in enumerate(self.chests):
+            for idxCheck, toCheck in enumerate(self.chests):
+                if idxCheck == idxAppend:
+                    distances[idxAppend, idxCheck] = np.infty
+                else:
+                    costs = None
+                    for check in toAppend.graphs.everyConnections:
+                        if check.reference.graphs.id == toCheck.graphs.id:
+                            costs = check.costs
+                            break
+
+                    if costs is not None:
+                        distances[idxAppend, idxCheck] = costs if costs != 0 else 1
+                    else:
+                        distances[idxAppend, idxCheck] = abs(toAppend.avgX - toCheck.avgX) + abs(toAppend.avgY - toCheck.avgY)
+        # For efficency reasons, we have to reset the id of every chests for after
+        for idx, chest in enumerate(self.chests):
+            chest.graphs.id = idx
+        ant_colony = AntColony(distances, 100, 10, 3000, 0.95, alpha=1, beta=1)
+        shortest_path = ant_colony.run(draw, self.chests)
+        print("shorted_path: {}".format(shortest_path))
