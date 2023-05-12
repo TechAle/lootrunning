@@ -1,3 +1,6 @@
+import json
+import math
+import os
 import sys
 
 import cv2
@@ -9,6 +12,8 @@ from sortedcontainers import SortedDict
 from graphs import connection
 
 import numpy as np
+
+from datetime import datetime
 
 
 class chestManager:
@@ -41,40 +46,44 @@ class chestManager:
         # Start normalizing values for after
         scaledValues["endX"] -= scaledValues["startX"]
         scaledValues["endY"] -= scaledValues["startY"]
-        with open("waypoints.txt", 'r') as file:
-            # The first 3 lines are useless
-            for i in range(3):
-                file.readline()
+        with open("chests.csv", 'r') as file:
+            # The first line is just an header
+            file.readline()
             # Read every waypoint
             while line := file.readline():
-                array = line.rstrip().split(":")
+                warning = False
+                array = line.rstrip().split(",")
                 # Get x-y-z
-                x, y, z = int(array[3]), int(array[4]), int(array[5])
+                realX, realY, realZ = int(array[0]), int(array[1]), int(array[2])
                 ## Normalizing the values as coordinates
-                x = (x - scaledValues["startX"]) / scaledValues["endX"]
+                x = (realX - scaledValues["startX"]) / scaledValues["endX"]
                 x = 1 if x > 1 else 0 if x < 0 else x
-                z = (z - scaledValues["startY"]) / scaledValues["endY"]
+                z = (realZ - scaledValues["startY"]) / scaledValues["endY"]
                 z = 1 if z > 1 else 0 if z < 0 else z
                 x = int(dimensions["start"][0] + dimensions["width"] * x)
                 z = int(dimensions["start"][1] + dimensions["height"] * z)
-
                 # If the waypoint we found is in an area we discovered before, remove that area
                 if (chestFound := self.chestExists(x, z)) is not None:
                     self.chests.remove(chestFound)
+                else:
+                    warning = True
                 # Add it
-                self.waypoints.append((x, y, z))
+                self.waypoints.append((x, realY, z, warning, realX, realZ))
         # Normalize it again as a waypoint
         for wayp in self.waypoints:
-            self.chests.append(chest(wayp[0], wayp[1], wayp[2]))
+            self.chests.append(chest(wayp[0], wayp[1], wayp[2], wayp[3], wayp[4], wayp[5]))
         # Add mistport as a node, this is our starting point
-        x, y, z = -760, 85, 1346
-        x = (x - scaledValues["startX"]) / scaledValues["endX"]
+        realX, realY, realZ = -760, 85, 1346
+        x = (realX - scaledValues["startX"]) / scaledValues["endX"]
         x = 1 if x > 1 else 0 if x < 0 else x
-        z = (z - scaledValues["startY"]) / scaledValues["endY"]
+        z = (realZ - scaledValues["startY"]) / scaledValues["endY"]
         z = 1 if z > 1 else 0 if z < 0 else z
         x = int(dimensions["start"][0] + dimensions["width"] * x)
         z = int(dimensions["start"][1] + dimensions["height"] * z)
-        self.chests.insert(0, chest(x, y, z))
+        self.chests.insert(0, chest(x, realY, z, True, realX, realZ))
+        # They are gonna be needed after
+        self.scaledValues = scaledValues
+        self.dimensions = dimensions
 
     '''
         # This just call "calculateAverage" of every chest
@@ -111,7 +120,7 @@ class chestManager:
                 if wayp is toCheck:
                     continue
                 cost = abs(wayp.avgX - toCheck.avgX) + abs(wayp.avgY - toCheck.avgY)
-                # Having a costs of 0 mess up with the ant algo
+                # Having a costs of 0 means the 2 nodes are not touching
                 if tempCosts == 0:
                     tempCosts = 1
                 # Lazy fix, but it works
@@ -381,6 +390,95 @@ class chestManager:
         # For efficency reasons, we have to reset the id of every chests for after
         for idx, chest in enumerate(self.chests):
             chest.graphs.id = idx
-        ant_colony = AntColony(distances, 100, 10, 3000, 0.95, alpha=1, beta=1)
-        shortest_path = ant_colony.run(draw, self.chests)
-        print("shorted_path: {}".format(shortest_path))
+        while True:
+            ant_colony = AntColony(distances,
+                                    n_ants=100, n_best=10, n_iterations=1000,
+                                    decay=0.95, alpha=1, beta=1, backStart=False, maxSelfPath = 75)
+            shortest_path, display = ant_colony.run(draw, self.chests)
+            self.save(shortest_path, display)
+
+    def getReal(self, xyz):
+        if xyz.realY is None:
+            x = (xyz.avgX - self.dimensions["start"][0])/self.dimensions["width"]
+            x = x*self.scaledValues["endX"] + self.scaledValues["startX"]
+            y = (xyz.avgY - self.dimensions["start"][1])/self.dimensions["height"]
+            y = y*self.scaledValues["endY"] + self.scaledValues["startY"]
+            output = {
+                "avgX": x,
+                "realY": None,
+                "avgY": y,
+                "warning": xyz.warning
+            }
+        else:
+            output = {
+                "avgX": xyz.realX,
+                "realY": xyz.realY,
+                "avgY": xyz.realZ,
+                "warning": xyz.warning
+            }
+        return output
+
+    def createPath(self, path) -> dict:
+        result = {
+            "points": [],
+            "chests": [],
+            "notes": [],
+            "date": "Apr 29, 2023, 6:48:03 PM"
+        }
+        prev = self.getReal(self.chests[path[0][0][0]])
+
+        for section in path[0]:
+            # Add notes
+            note = ""
+            next = self.getReal(self.chests[section[1].item()])
+            if next["warning"]:
+                note += "ANOMALY "
+            if next["realY"] is None:
+                note += "NOT PRECISE "
+                next["realY"] = 78
+            else:
+                note += "SELF DETECTED"
+            if len(note) != 0:
+                result["notes"].append({
+                    "location": {
+                        "x": next["avgX"],
+                        "y": next["realY"],
+                        "z": next["avgY"]
+                    },
+                    "note": {
+                        "text": note
+                    }
+                })
+
+            distance = math.sqrt(pow((next["avgX"] - prev["avgX"]),2) + pow((next["avgY"] - prev["avgY"]),2))
+            steps = distance / 10
+            zSteps = (next["avgY"] - prev["avgY"])/steps
+            ySteps = (next["realY"] - prev["realY"]) / steps
+            xSteps = (next["avgX"] - prev["avgX"])/steps
+            nowX = prev["avgX"]
+            nowY = prev["realY"]
+            nowZ = prev["avgY"]
+            for i in range(int(steps)):
+                result["points"].append({
+                    "x": nowX,
+                    "y": nowY,
+                    "z": nowZ
+                })
+                nowX += xSteps
+                nowY += ySteps
+                nowZ += zSteps
+            result["chests"].append({
+                "x": next["avgX"],
+                "y": next["realY"],
+                "z": next["avgY"]
+            })
+            prev = next
+        return result
+    def save(self, path, picture):
+        directory = f"results/{path[1]}_{str(datetime.now()).replace(' ', '_')}/"
+        os.makedirs(directory)
+        cv2.imwrite(directory + "result.jpg", picture)
+        path = self.createPath(path)
+        # Directly from dictionary
+        with open(f'{directory}path.json', 'w') as outfile:
+            json.dump(path, outfile)

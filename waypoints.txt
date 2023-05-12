@@ -1,6 +1,11 @@
 #
 #waypoint:name:initials:x:y:z:color:disabled:type:set:rotate_on_tp:tp_yaw:visibility_type:destination
 #
+waypoint:Cache45:C:110:70:1727:10:false:0:gui.xaero_default:false:0:0:false
+waypoint:Cache44:C:683:50:1195:5:false:0:gui.xaero_default:false:0:0:false
+waypoint:Cache43:C:820:62:1393:13:false:0:gui.xaero_default:false:0:0:false
+waypoint:Cache42:C:365:23:1809:4:false:0:gui.xaero_default:false:0:0:false
+waypoint:Cache41:C:-605:15:-183:4:false:0:gui.xaero_default:false:0:0:false
 waypoint:Cache40:C:-897:68:1787:10:false:0:gui.xaero_default:false:0:0:false
 waypoint:Cache39:C:-1265:58:-380:14:false:0:gui.xaero_default:false:0:0:false
 waypoint:Cache38:C:-1197:65:-90:6:false:0:gui.xaero_default:false:0:0:false
@@ -25,7 +30,6 @@ waypoint:Cache23:C:-1728:27:1522:14:false:0:gui.xaero_default:false:0:0:false
 waypoint:Cache21:C:-271:48:297:10:false:0:gui.xaero_default:false:0:0:false
 waypoint:Cache20:C:78:59:1400:12:false:0:gui.xaero_default:false:0:0:false
 waypoint:Cache19:C:-1404:53:1103:10:false:0:gui.xaero_default:false:0:0:false
-waypoint:Cache18:C:516:74:120:0:false:0:gui.xaero_default:false:0:0:false
 waypoint:Cache17:C:795:46:-215:9:false:0:gui.xaero_default:false:0:0:false
 waypoint:Cache16:C:-323:49:-533:11:false:0:gui.xaero_default:false:0:0:false
 waypoint:Cache16:C:-1851:79:1385:6:false:0:gui.xaero_default:false:0:0:false
@@ -35,7 +39,6 @@ waypoint:Cache12:C:-1741:66:1647:12:false:0:gui.xaero_default:false:0:0:false
 waypoint:Cache11:C:-236:57:-621:3:false:0:gui.xaero_default:false:0:0:false
 waypoint:Cache9:C:-437:5:410:10:false:0:gui.xaero_default:false:0:0:false
 waypoint:Cache7:C:78:59:1400:1:false:0:gui.xaero_default:false:0:0:false
-waypoint:Cache1:V:-270:48:296:8:false:0:gui.xaero_default:false:0:0:false
 waypoint:Cache4:V:-745:34:388:12:false:0:gui.xaero_default:false:0:0:false
 waypoint:Cache5:V:-594:64:968:5:false:0:gui.xaero_default:false:0:0:false
 waypoint:Cache6:V:513:54:529:12:false:0:gui.xaero_default:false:0:0:false

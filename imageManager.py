@@ -1,3 +1,5 @@
+import os
+
 import cv2
 import numpy
 
@@ -26,6 +28,11 @@ class imageManager:
 
         # The manager of every location of every chest
         self.chestManager = chestManager()
+        # Create directory for results
+        if not os.path.isdir("results"):
+            # if the demo_folder2 directory is
+            # not present then create it.
+            os.makedirs("results")
 
     '''
         This function is needed for creating restrictions
@@ -175,8 +182,8 @@ class imageManager:
         self.chestManager.loadWaypoints(self.dimensions.copy(), self.imgScaledValues.copy())
         # And display it
         for waypoint in self.chestManager.waypoints:
-            self.drawnImage = cv2.rectangle(self.drawnImage, (waypoint[0] - 2, waypoint[2] - 2),
-                                            (waypoint[0] + 2, waypoint[2] + 2), (0, 255, 255), 1)
+            self.drawnImage = cv2.rectangle(self.drawnImage, (waypoint[0] - 5, waypoint[2] - 5),
+                                            (waypoint[0] + 5, waypoint[2] + 5), (255, 0, 255) if waypoint[3] else(0, 255, 255), 1)
         cv2.imshow("Lootrunning", self.drawnImage)
         cv2.waitKey(1)
 
@@ -196,11 +203,7 @@ class imageManager:
 
     # This start the calculation of the best path
     def calculatePath(self):
-        #self.drawnImage = self.chestManager.calculateGreedyBruteforce(self.drawnImage.copy())
-        self.drawnImage = self.chestManager.calculateAntAlgorithm(self.drawnImage.copy())
-        cv2.imshow("Lootrunning", self.drawnImage)
-        cv2.waitKey(0)
-
+        self.chestManager.calculateAntAlgorithm(self.drawnImage.copy())
     '''
         Main function for creating restrictions
     '''

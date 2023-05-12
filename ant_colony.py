@@ -8,7 +8,7 @@ import time
 # Source: https://github.com/Akavall/AntColonyOptimization/blob/master/ant_colony.py
 class AntColony(object):
     # 174-180
-    def __init__(self, distances, n_ants, n_best, n_iterations, decay, alpha=1, beta=1):
+    def __init__(self, distances, n_ants, n_best, n_iterations, decay, alpha=1, beta=1, backStart = True, maxSelfPath = 999999):
         """
         Args:
             distances (2D numpy.array): Square matrix of distances. Diagonal is assumed to be np.inf.
@@ -31,21 +31,38 @@ class AntColony(object):
         self.decay = decay
         self.alpha = alpha
         self.beta = beta
+        self.backStart = backStart
+        self.maxSelfPath = maxSelfPath
 
     def run(self, draw, chests):
+        samePath = 0
         shortest_path = None
         all_time_shortest_path = ("placeholder", np.inf)
-        timeStart = time.time()
+        prevScore = -1
+        display = None
+
         for i in range(self.n_iterations):
             all_paths = self.gen_all_paths()
             self.spread_pheronome(all_paths, self.n_best, shortest_path=shortest_path)
             shortest_path = min(all_paths, key=lambda x: x[1])
             if shortest_path[1] < all_time_shortest_path[1]:
                 all_time_shortest_path = shortest_path
+                samePath = 0
+            else:
+                if all_time_shortest_path[1] == prevScore:
+                    samePath += 1
+                    if self.maxSelfPath < samePath:
+                        print("stuck")
+                        break
+                else:
+                    samePath = 0
+                    prevScore = all_time_shortest_path[1]
             self.pheromone = self.pheromone * self.decay
             if True:
-                self.updateMapAnts(draw.copy(), all_time_shortest_path[0], shortest_path[0], all_time_shortest_path[1], shortest_path[1], chests)
-        return all_time_shortest_path
+                display = self.updateMapAnts(draw.copy(), all_time_shortest_path[0], shortest_path[0], all_time_shortest_path[1], shortest_path[1], chests)
+        if self.maxSelfPath >= samePath:
+            print("End iterations")
+        return all_time_shortest_path, display
 
     def getCordsById(self, id, chests):
         for i in chests:
@@ -72,17 +89,21 @@ class AntColony(object):
                 else:
                     firstBreak = True
 
-        # I cannot unpack, there is a strange error
-        for i in pathOptimized:
+        for opt, unopt in zip(pathOptimized, pathUnoptimized):
+            firstBreak = False
             for chest in chests:
-                if chest.graphs.id == i[1]:
+                if chest.graphs.id == opt[1]:
                     pathOptimizedConnections.append(chest)
-                    break
-        for i in pathUnoptimized:
-            for chest in chests:
-                if chest.graphs.id == i[1]:
+                    if firstBreak:
+                        break
+                    else:
+                        firstBreak = True
+                if chest.graphs.id == unopt[1]:
                     pathUnoptimizedConnections.append(chest)
-                    break
+                    if firstBreak:
+                        break
+                    else:
+                        firstBreak = True
 
         # Display best path
         for i in range(len(pathOptimizedConnections) - 1):
@@ -102,10 +123,11 @@ class AntColony(object):
                               (0, 255, 255), 1, cv2.LINE_AA)
 
         display = cv2.circle(display, (pathOptimizedConnections[0].avgX, pathOptimizedConnections[0].avgY,), 10,
-                             (0, 120, 255), 2)
+                             (255, 255, 255), 2)
 
         cv2.imshow("Lootrunning", display)
         cv2.waitKey(1)
+        return display
 
     def spread_pheronome(self, all_paths, n_best, shortest_path):
         sorted_paths = sorted(all_paths, key=lambda x: x[1])
@@ -136,7 +158,8 @@ class AntColony(object):
             path.append((prev, move))
             prev = move
             visited.add(move)
-        path.append((prev, start)) # going back to where we started
+        if self.backStart:
+            path.append((prev, start)) # going back to where we started
         return path
 
     def pick_move(self, pheromone, dist, visited):

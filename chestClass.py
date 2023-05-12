@@ -3,7 +3,7 @@ import sys
 from graphs import graphs
 
 class chest:
-    def __init__(self, x, y, z=None):
+    def __init__(self, x, y, z=None, warning=False, realX=None, realZ=None):
         # For image detected
         if z is None:
             self.blocks = []
@@ -15,8 +15,10 @@ class chest:
         else:
             self.avgX = x
             self.avgY = z
+            self.realX = realX
             self.realY = y
-
+            self.realZ = realZ
+        self.warning = warning
         self.graphs = graphs()
 
     def addBlock(self, x, y):
@@ -63,7 +65,7 @@ class chest:
                             (toCheck[1] == block[1] and abs(toCheck[0] - block[0]) == 1):
                         return True
             else:
-                if (self.avgX - toCheck[0])**2 + (self.avgY - toCheck[1])**2 <= 36:
+                if abs(self.avgX - toCheck[0]) + abs(self.avgY - toCheck[1]) <= 40:
                     return True
             return False
         elif type(toCheck) is chest:
