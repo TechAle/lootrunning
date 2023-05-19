@@ -41,6 +41,7 @@ class imageManager:
     def click_event(self, event, x, y, flags, params):
         # Creating the area
         if event == cv2.EVENT_LBUTTONDOWN:
+            '''
             add = True
             isZero = False
             if self.subGroup["points"].__len__() > 0:
@@ -64,6 +65,7 @@ class imageManager:
                     self.nonCompletedLines = cv2.line(self.nonCompletedLines, (x, y),
                                                       (self.subGroup["points"][-2][0], self.subGroup["points"][-2][1]), (120, 120, 120), 2)
                     cv2.imshow("Lootrunning", self.nonCompletedLines)
+            '''
         # Make points from start->end->remove
         elif event == cv2.EVENT_RBUTTONDOWN:
             pass

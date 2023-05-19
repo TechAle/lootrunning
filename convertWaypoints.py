@@ -37,6 +37,6 @@ for x, y, z in zip(df[df.keys()[4]].to_numpy(), df[df.keys()[5]].to_numpy(), df[
 
 print(f"New chests: {newChests} total chests: {totalChests}")
 
-text_file = open("chests.csv", "w")
+text_file = open("chests1.csv", "w")
 n = text_file.write(output)
 text_file.close()

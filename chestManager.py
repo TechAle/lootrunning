@@ -46,7 +46,7 @@ class chestManager:
         # Start normalizing values for after
         scaledValues["endX"] -= scaledValues["startX"]
         scaledValues["endY"] -= scaledValues["startY"]
-        with open("chests.csv", 'r') as file:
+        with open("chests1.csv", 'r') as file:
             # The first line is just an header
             file.readline()
             # Read every waypoint
@@ -62,8 +62,10 @@ class chestManager:
                 z = 1 if z > 1 else 0 if z < 0 else z
                 x = int(dimensions["start"][0] + dimensions["width"] * x)
                 z = int(dimensions["start"][1] + dimensions["height"] * z)
+                if x == 760 and z == 1554:
+                    b = 0
                 # If the waypoint we found is in an area we discovered before, remove that area
-                if (chestFound := self.chestExists(x, z)) is not None:
+                if (chestFound := self.chestNear(x, z)) is not None:
                     self.chests.remove(chestFound)
                 else:
                     warning = True
@@ -91,6 +93,12 @@ class chestManager:
     def calculateAverageChests(self):
         for chest in self.chests:
             chest.calculateAverage()
+
+    def chestNear(self, x, y):
+        for chest in self.chests:
+            if abs(chest.avgX - x) + abs(chest.avgY - y) < 10:
+                return chest
+        return None
 
     '''
         It checks if, given x, y, there is alr a chest there
@@ -426,7 +434,7 @@ class chestManager:
             "date": "Apr 29, 2023, 6:48:03 PM"
         }
         prev = self.getReal(self.chests[path[0][0][0]])
-
+        id = 0
         for section in path[0]:
             # Add notes
             note = ""
@@ -438,17 +446,18 @@ class chestManager:
                 next["realY"] = 78
             else:
                 note += "SELF DETECTED"
-            if len(note) != 0:
-                result["notes"].append({
-                    "location": {
-                        "x": next["avgX"],
-                        "y": next["realY"],
-                        "z": next["avgY"]
-                    },
-                    "note": {
-                        "text": note
-                    }
-                })
+            note += "Id = " + str(id)
+            result["notes"].append({
+                "location": {
+                    "x": next["avgX"],
+                    "y": next["realY"],
+                    "z": next["avgY"]
+                },
+                "note": {
+                    "text": note
+                }
+            })
+            id += 1
 
             distance = math.sqrt(pow((next["avgX"] - prev["avgX"]),2) + pow((next["avgY"] - prev["avgY"]),2))
             steps = distance / 10
