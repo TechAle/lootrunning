@@ -46,7 +46,7 @@ class chestManager:
         # Start normalizing values for after
         scaledValues["endX"] -= scaledValues["startX"]
         scaledValues["endY"] -= scaledValues["startY"]
-        with open("chests1.csv", 'r') as file:
+        with open("resources/chests.csv", 'r') as file:
             # The first line is just an header
             file.readline()
             # Read every waypoint
@@ -484,7 +484,7 @@ class chestManager:
             prev = next
         return result
     def save(self, path, picture):
-        directory = f"results/{path[1]}_{str(datetime.now()).replace(' ', '_')}/"
+        directory = f"../results/{path[1]}_{str(datetime.now()).replace(' ', '_')}/"
         os.makedirs(directory)
         cv2.imwrite(directory + "result.jpg", picture)
         path = self.createPath(path)

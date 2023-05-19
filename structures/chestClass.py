@@ -1,6 +1,6 @@
 import sys
 
-from graphs import graphs
+from structures.graphs import graphs
 
 class chest:
     def __init__(self, x, y, z=None, warning=False, realX=None, realZ=None):
