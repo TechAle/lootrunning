@@ -3,7 +3,7 @@ import os
 import cv2
 import numpy
 
-from chestManager import chestManager
+from managers.chestManager import chestManager
 
 
 class imageManager:
@@ -29,10 +29,10 @@ class imageManager:
         # The manager of every location of every chest
         self.chestManager = chestManager()
         # Create directory for results
-        if not os.path.isdir("results"):
+        if not os.path.isdir("../results"):
             # if the demo_folder2 directory is
             # not present then create it.
-            os.makedirs("results")
+            os.makedirs("../results")
 
     '''
         This function is needed for creating restrictions

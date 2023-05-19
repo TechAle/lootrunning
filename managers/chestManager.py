@@ -6,10 +6,10 @@ import sys
 import cv2
 
 from ant_colony import AntColony
-from chestClass import chest
+from structures.chestClass import chest
 from sortedcontainers import SortedDict
 
-from graphs import connection
+from structures.graphs import connection
 
 import numpy as np
 

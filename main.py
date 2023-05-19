@@ -1,9 +1,9 @@
 # Python program to explain cv2.line() method
 
 # importing cv2
-from imageManager import imageManager
+from managers.imageManager import imageManager
 
-path = 'img.jpg'
+path = 'resources/img.jpg'
 
 
 def main(pathInput):

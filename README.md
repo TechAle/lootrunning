@@ -1,6 +1,6 @@
 # Lootrunning
 This code tries to find the fastest path of some nodes from an image.<br>
-![Map](img.jpg)
+![Map](resources/img.jpg)
 Every red circles are nodes of the graph that is gonna be created, and after getting the shortest path.<br>
 Every point is between y=[-655, 1900] x=[-2222, 860], the coordinates displayed the map are not accurate.<br>
 I do not own the original image, so i cannot change this imprecision.<br>

@@ -4,7 +4,7 @@ import pandas as pd
 coordsChests = []
 output = "x,y,z"
 
-with open("waypoints.txt", 'r') as file:
+with open("resources/waypoints.txt", 'r') as file:
     # The first 3 lines are useless
     for i in range(3):
         file.readline()

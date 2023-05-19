@@ -1,13 +1,10 @@
-import random as rn
-
 import cv2
 import numpy as np
 from numpy.random import choice as np_choice
-import time
 
 # Source: https://github.com/Akavall/AntColonyOptimization/blob/master/ant_colony.py
 class AntColony(object):
-    # 174-180
+
     def __init__(self, distances, n_ants, n_best, n_iterations, decay, alpha=1, beta=1, backStart = True, maxSelfPath = 999999):
         """
         Args:
