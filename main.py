@@ -1,6 +1,5 @@
 # Python program to explain cv2.line() method
 
-# importing cv2
 from managers.imageManager import imageManager
 
 path = 'resources/img.jpg'

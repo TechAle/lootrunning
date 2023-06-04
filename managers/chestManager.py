@@ -62,8 +62,6 @@ class chestManager:
                 z = 1 if z > 1 else 0 if z < 0 else z
                 x = int(dimensions["start"][0] + dimensions["width"] * x)
                 z = int(dimensions["start"][1] + dimensions["height"] * z)
-                if x == 760 and z == 1554:
-                    b = 0
                 # If the waypoint we found is in an area we discovered before, remove that area
                 if (chestFound := self.chestNear(x, z)) is not None:
                     self.chests.remove(chestFound)
@@ -75,7 +73,7 @@ class chestManager:
         for wayp in self.waypoints:
             self.chests.append(chest(wayp[0], wayp[1], wayp[2], wayp[3], wayp[4], wayp[5]))
         # Add mistport as a node, this is our starting point
-        realX, realY, realZ = -760, 85, 1346
+        realX, realY, realZ = -121, 166, 449
         x = (realX - scaledValues["startX"]) / scaledValues["endX"]
         x = 1 if x > 1 else 0 if x < 0 else x
         z = (realZ - scaledValues["startY"]) / scaledValues["endY"]
@@ -127,7 +125,8 @@ class chestManager:
             for toCheck in self.chests:
                 if wayp is toCheck:
                     continue
-                cost = abs(wayp.avgX - toCheck.avgX) + abs(wayp.avgY - toCheck.avgY)
+                # TODO distance
+                cost = int(math.dist((wayp.avgX, wayp.avgY), (toCheck.avgX, toCheck.avgY)))
                 # Having a costs of 0 means the 2 nodes are not touching
                 if tempCosts == 0:
                     tempCosts = 1
@@ -445,7 +444,7 @@ class chestManager:
                 note += "NOT PRECISE "
                 next["realY"] = 78
             else:
-                note += "SELF DETECTED"
+                note += "SELF DETECTED "
             note += "Id = " + str(id)
             result["notes"].append({
                 "location": {
@@ -484,7 +483,7 @@ class chestManager:
             prev = next
         return result
     def save(self, path, picture):
-        directory = f"../results/{path[1]}_{str(datetime.now()).replace(' ', '_')}/"
+        directory = f"./results/{path[1]}_{str(datetime.now()).replace(' ', '_')}/"
         os.makedirs(directory)
         cv2.imwrite(directory + "result.jpg", picture)
         path = self.createPath(path)

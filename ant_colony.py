@@ -45,6 +45,7 @@ class AntColony(object):
             if shortest_path[1] < all_time_shortest_path[1]:
                 all_time_shortest_path = shortest_path
                 samePath = 0
+                print(shortest_path[1])
             else:
                 if all_time_shortest_path[1] == prevScore:
                     samePath += 1
@@ -122,8 +123,8 @@ class AntColony(object):
         display = cv2.circle(display, (pathOptimizedConnections[0].avgX, pathOptimizedConnections[0].avgY,), 10,
                              (255, 255, 255), 2)
 
-        cv2.imshow("Lootrunning", display)
-        cv2.waitKey(1)
+        #cv2.imshow("Lootrunning", display)
+        #cv2.waitKey(1)
         return display
 
     def spread_pheronome(self, all_paths, n_best, shortest_path):

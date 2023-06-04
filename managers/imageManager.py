@@ -89,7 +89,7 @@ class imageManager:
         for end in self.subGroup["end"]:
             self.completedLines = cv2.circle(self.completedLines, (end[0], end[1]), 5,
                                              (0, 0, 255), 2)
-        cv2.imshow("Lootrunning", self.completedLines)
+        #cv2.imshow("Lootrunning", self.completedLines)
 
     '''
         This function just setup the starting picture, and events
@@ -98,13 +98,13 @@ class imageManager:
         # Reading an image in default mode
         self.originalImage = cv2.imread(self.path)
 
-        cv2.imshow("Lootrunning", self.originalImage)
+        #cv2.imshow("Lootrunning", self.originalImage)
 
         # Mouse event setup
         cv2.setMouseCallback('Lootrunning',
                              lambda event, x, y, flags, params: self.click_event(event, x, y, flags, params))
 
-        cv2.waitKey(1)
+        #cv2.im.waitKey(1)
 
     '''
         This setup the dimensions of the image, in particular
@@ -157,8 +157,8 @@ class imageManager:
         }
 
         # Display the image
-        cv2.imshow("Lootrunning", self.drawnImage)
-        cv2.waitKey(1)
+        #cv2.imshow("Lootrunning", self.drawnImage)
+        #cv2.im.waitKey(1)
 
     '''
         Find every red parts in the picture, that is the location we need
@@ -186,8 +186,8 @@ class imageManager:
         for waypoint in self.chestManager.waypoints:
             self.drawnImage = cv2.rectangle(self.drawnImage, (waypoint[0] - 5, waypoint[2] - 5),
                                             (waypoint[0] + 5, waypoint[2] + 5), (255, 0, 255) if waypoint[3] else(0, 255, 255), 1)
-        cv2.imshow("Lootrunning", self.drawnImage)
-        cv2.waitKey(1)
+        #cv2.imshow("Lootrunning", self.drawnImage)
+        #cv2.im.waitKey(1)
 
     '''
         Create the graph from every node
@@ -200,8 +200,8 @@ class imageManager:
             for connection in waypoint.graphs.preferedConnections:
                 self.drawnImage = cv2.line(self.drawnImage, (waypoint.avgX, waypoint.avgY),
                                            (connection.reference.avgX, connection.reference.avgY), (255, 255, 255), 1)
-        cv2.imshow("Lootrunning", self.drawnImage)
-        cv2.waitKey(1)
+        #cv2.imshow("Lootrunning", self.drawnImage)
+        #cv2.im.waitKey(1)
 
     # This start the calculation of the best path
     def calculatePath(self):
